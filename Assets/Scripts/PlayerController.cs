@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayerMask; // Layer mask to identify what is considered the ground
 
     [Header("Upward Force")]
+    public ParticleSystem forceParticles;
     public float forceRadius = 1.0f;
     public float forceStrength = 10.0f;
     private float initialGravityScale;
@@ -53,7 +54,6 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            //Add upwards force at mouse position to anything that is hit within a radius
             AddForceAtMousePosition();
         }
 
@@ -78,6 +78,10 @@ public class PlayerController : MonoBehaviour
         mousePos.z = 10;
         mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePos);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(mouseWorldPos, forceRadius);
+
+        // Play particle effect
+        forceParticles.transform.position = mouseWorldPos;
+        forceParticles.Play();
 
 
         foreach (Collider2D collider in colliders)

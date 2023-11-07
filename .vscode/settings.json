@@ -56,5 +56,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "TeleJump.sln"
+    "dotnet.defaultSolution": "TeleJump.sln",
+    "cSpell.words": [
+        "Rigidbody"
+    ]
 }

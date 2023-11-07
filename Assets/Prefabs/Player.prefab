@@ -230,10 +230,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 5
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -261,6 +261,7 @@ MonoBehaviour:
   indicator: {fileID: 254340175049013633}
   projectilePrefab: {fileID: 5596505665597074793, guid: c964bf2149c63f6408807a37437fdacc, type: 3}
   projectileSpeed: 10
+  hasWallSlide: 0
   wallHoldTime: 3
   wallLayerMask:
     serializedVersion: 2
@@ -268,6 +269,8 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 72
+  hasAirBurst: 0
+  forceParticles: {fileID: 0}
   forceRadius: 0.25
   forceStrength: 5
   mouseWorldPos: {x: 0, y: 0, z: 0}

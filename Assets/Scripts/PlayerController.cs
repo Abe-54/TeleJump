@@ -5,25 +5,31 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Abilities")]
+    public bool hasWallSlide = false;
+    public bool hasAirBurst = false;
+
+    [Header("Movement Attributes")]
     public GameObject indicatorAnchor;
     public GameObject indicator;
 
-    [Header("Shooting")]
+    [Header("Shooting Attributes")]
     public GameObject projectilePrefab;
+    public float projectileLifeTime = 2.0f;
     public float projectileSpeed = 10.0f;
 
-    [Header("Wall Sliding")]
+    [Header("Wall Sliding Attributes")]
     public float wallHoldTime = 3.0f; // Time in seconds to hold onto the wall
     public LayerMask wallLayerMask; // Layer mask to identify what is considered a wall
     public LayerMask groundLayerMask; // Layer mask to identify what is considered the ground
+    private float wallHoldTimer;
 
-    [Header("Upward Force")]
+    [Header("Air Burst Attributes")]
     public ParticleSystem forceParticles;
+    public LayerMask forceLayerMask;
     public float forceRadius = 1.0f;
     public float forceStrength = 10.0f;
     private float initialGravityScale;
-    private float wallHoldTimer;
 
     [Header("Debug")]
     public Vector3 mouseWorldPos;
@@ -44,7 +50,6 @@ public class PlayerController : MonoBehaviour
     {
         RotateIndicator();
         CheckFlipPlayer();
-        CheckForWall();
         CheckIfGrounded();
 
         if (Input.GetMouseButtonDown(0))
@@ -52,21 +57,25 @@ public class PlayerController : MonoBehaviour
             Shoot();
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) && hasAirBurst)
         {
             AddForceAtMousePosition();
         }
 
-        if (isHoldingWall)
+        if (hasWallSlide)
         {
-            wallHoldTimer -= Time.deltaTime;
-            if (wallHoldTimer <= 0)
+            CheckForWall();
+            if (isHoldingWall)
             {
-                // Gradually restore gravity
-                rb.gravityScale = Mathf.MoveTowards(rb.gravityScale, initialGravityScale, Time.deltaTime);
-                if (rb.gravityScale == initialGravityScale)
+                wallHoldTimer -= Time.deltaTime;
+                if (wallHoldTimer <= 0)
                 {
-                    isHoldingWall = false; // Player falls off the wall
+                    // Gradually restore gravity
+                    rb.gravityScale = Mathf.MoveTowards(rb.gravityScale, initialGravityScale, Time.deltaTime);
+                    if (rb.gravityScale == initialGravityScale)
+                    {
+                        isHoldingWall = false; // Player falls off the wall
+                    }
                 }
             }
         }
@@ -77,7 +86,7 @@ public class PlayerController : MonoBehaviour
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = 10;
         mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePos);
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(mouseWorldPos, forceRadius);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(mouseWorldPos, forceRadius, forceLayerMask);
 
         // Play particle effect
         forceParticles.transform.position = mouseWorldPos;
@@ -86,6 +95,7 @@ public class PlayerController : MonoBehaviour
 
         foreach (Collider2D collider in colliders)
         {
+            Debug.Log("Adding force to " + collider.name);
             Rigidbody2D rb = collider.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
@@ -152,7 +162,7 @@ public class PlayerController : MonoBehaviour
     {
         GameObject projectile = Instantiate(projectilePrefab, indicator.transform.position, Quaternion.identity);
         projectile.GetComponent<Rigidbody2D>().velocity = indicator.transform.up * projectileSpeed;
-        Destroy(projectile, 2);
+        Destroy(projectile, projectileLifeTime);
 
     }
 

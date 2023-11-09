@@ -24,13 +24,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 254340175049013633}
-  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 200694928565512367}
+  m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5478460868063357714
 SpriteRenderer:
@@ -111,7 +111,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 530487011741235364}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.55, y: -1.23, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -120,6 +119,7 @@ Transform:
   - {fileID: 200694928565512367}
   - {fileID: 2125518160404885703}
   m_Father: {fileID: 0}
+  m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8317824584453689842
 SpriteRenderer:
@@ -257,11 +257,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40142ce2c05ec8946a1cc5d0627d49cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasWallSlide: 0
+  hasAirBurst: 1
   indicatorAnchor: {fileID: 4155664175968392606}
   indicator: {fileID: 254340175049013633}
   projectilePrefab: {fileID: 5596505665597074793, guid: c964bf2149c63f6408807a37437fdacc, type: 3}
+  projectileLifeTime: 2
   projectileSpeed: 10
-  hasWallSlide: 0
   wallHoldTime: 3
   wallLayerMask:
     serializedVersion: 2
@@ -269,10 +271,12 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 72
-  hasAirBurst: 0
   forceParticles: {fileID: 0}
+  forceLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   forceRadius: 0.25
-  forceStrength: 5
+  forceStrength: 9999
   mouseWorldPos: {x: 0, y: 0, z: 0}
   isFacingRight: 1
   isHoldingWall: 0
@@ -301,13 +305,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2770020830572580738}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.25, y: 0.2, z: 0}
   m_LocalScale: {x: 0.5, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1372132512520304089}
+  m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5509803288593571061
 SpriteRenderer:
@@ -384,7 +388,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4155664175968392606}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -392,4 +395,5 @@ Transform:
   m_Children:
   - {fileID: 7204695694802157455}
   m_Father: {fileID: 1372132512520304089}
+  m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

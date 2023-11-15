@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,7 +16,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Shooting Attributes")]
     public GameObject projectilePrefab;
-    public float projectileLifeTime = 2.0f;
+    public GameObject projectileSpawnPoint;
+    public int maxAmmo = 3;
+    public int ammo = 3;
+    public float rechargeTime = 2.0f;
+
     public float projectileSpeed = 10.0f;
 
     [Header("Wall Sliding Attributes")]
@@ -31,6 +36,11 @@ public class PlayerController : MonoBehaviour
     public float forceStrength = 10.0f;
     private float initialGravityScale;
 
+    [Header("Camera Attributes")]
+    public CinemachineVirtualCamera playerVCam;
+    public CinemachineConfiner playerVCamConfiner;
+    public PolygonCollider2D currentConfinerCollider;
+
     [Header("Debug")]
     public Vector3 mouseWorldPos;
     public bool isFacingRight = true;
@@ -43,6 +53,9 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         initialGravityScale = rb.gravityScale;
+
+        // Set up camera confiners
+        playerVCamConfiner.m_BoundingShape2D = currentConfinerCollider;
     }
 
     // Update is called once per frame
@@ -52,9 +65,14 @@ public class PlayerController : MonoBehaviour
         CheckFlipPlayer();
         CheckIfGrounded();
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && ammo > 0)
         {
-            Shoot();
+            StartCoroutine(Shoot());
+        }
+        else if (Input.GetMouseButtonDown(0) && ammo <= 0)
+        {
+            Debug.Log("Out of ammo");
+            StartCoroutine(RechargeAmmo());
         }
 
         if (Input.GetMouseButtonDown(1) && hasAirBurst)
@@ -79,6 +97,13 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+    }
+
+    public IEnumerator RechargeAmmo()
+    {
+        yield return new WaitForSeconds(rechargeTime);
+        Debug.Log("Recharged ammo");
+        ammo = maxAmmo;
     }
 
     private void AddForceAtMousePosition()
@@ -158,13 +183,28 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Flipped player");
     }
 
-    void Shoot()
+    IEnumerator Shoot()
     {
-        GameObject projectile = Instantiate(projectilePrefab, indicator.transform.position, Quaternion.identity);
-        projectile.GetComponent<Rigidbody2D>().velocity = indicator.transform.up * projectileSpeed;
-        Destroy(projectile, projectileLifeTime);
+        GameObject newProjectile = Instantiate(projectilePrefab, projectileSpawnPoint.transform.position, Quaternion.identity);
+        newProjectile.SetActive(false);
 
+        TeleportProjectile projectileScript = newProjectile.GetComponent<TeleportProjectile>();
+        projectileScript.Initialize(playerVCam, transform);
+
+        newProjectile.SetActive(true);
+
+        Rigidbody2D projectileRb = newProjectile.GetComponent<Rigidbody2D>();
+        projectileRb.velocity = indicator.transform.up * projectileSpeed;
+
+        ammo--;
+
+        yield return new WaitForSeconds(projectileScript.projectileLifeTime);
+
+        // Destroy the projectile
+        Destroy(newProjectile);
     }
+
+
 
     void CheckForWall()
     {

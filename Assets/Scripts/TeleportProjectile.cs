@@ -36,6 +36,9 @@ public class TeleportProjectile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+
+        if (other.gameObject.tag == "Player") return; // Ignore collision with player
+
         if (other.gameObject.tag == "TP_Wall")
         {
             playerTransform.position = transform.position; // Teleport player

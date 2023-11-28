@@ -41,6 +41,14 @@ public class PlayerController : MonoBehaviour
     public CinemachineConfiner playerVCamConfiner;
     public PolygonCollider2D currentConfinerCollider;
 
+    [Header("Art")]
+    public List<Sprite> idleSprite;
+    public List<Sprite> nSprites;
+    public List<Sprite> neSprites;
+    public List<Sprite> eSprites;
+    public List<Sprite> seSprites;
+    public List<Sprite> fallingSprites;
+
     [Header("Debug")]
     public Vector3 mouseWorldPos;
     public bool isFacingRight = true;
@@ -53,6 +61,9 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         initialGravityScale = rb.gravityScale;
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
 
         // Set up camera confiners
         playerVCamConfiner.m_BoundingShape2D = currentConfinerCollider;
@@ -96,6 +107,60 @@ public class PlayerController : MonoBehaviour
                     }
                 }
             }
+        }
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = GetSpriteDirection();
+    }
+
+    /// <summary>
+    /// Returns the correct sprite based on the direction the player is facing
+    /// </summary>
+    Sprite GetSpriteDirection()
+    {
+        if (!IsMouseWithinRange())
+        {
+            // If the mouse is outside the range, return the current sprite
+            // or a default sprite. This depends on your game logic.
+            return GetComponent<SpriteRenderer>().sprite;
+        }
+
+        // convert mouse position from screen to world coordinates
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        // direction vector from the player to the mouse position
+        Vector2 direction = (mouseWorldPos - transform.position).normalized;
+
+        // calculating the angle of the direction vector in degrees
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Adjust angle for flipped player
+        if (transform.localScale.x < 0)
+        {
+            angle = 180 - angle;
+        }
+
+        // Normalize the angle to be within 0-360 range
+        if (angle < 0) angle += 360;
+
+        // Debug.Log("Angle: " + angle);
+
+        // checking the angle to determine which sprite to use
+        if (angle > 75 && angle <= 105) // shooting directly above
+        {
+            return nSprites[0];
+        }
+        else if ((angle > 45 && angle <= 75) || (angle > 105 && angle < 135)) // shooting northeast or northwest
+        {
+            return neSprites[0]; // or nwSprites[0] depending on your sprite setup
+        }
+        else if (angle > 315 && angle <= 359) // shooting southeast or southwest
+        {
+            return seSprites[0]; // or swSprites[0] depending on your sprite setup
+        }
+        else // shooting directly in front (east or west)
+        {
+            return eSprites[0];
         }
     }
 
@@ -144,6 +209,8 @@ public class PlayerController : MonoBehaviour
 
     void RotateIndicator()
     {
+        if (!IsMouseWithinRange()) return;
+
         Vector3 mousePos = Input.mousePosition;
         Vector3 objectPos = Camera.main.WorldToScreenPoint(transform.position);
         mousePos -= objectPos;
@@ -151,9 +218,9 @@ public class PlayerController : MonoBehaviour
         float angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg - 90;
 
         //Limit angle to 180 degrees
-        // angle = angle > 180 ? angle - 360 : angle;
-        // angle = angle < -180 ? angle + 360 : angle;
-        // angle = Mathf.Clamp(angle, -90, 90);
+        angle = angle > 220 ? angle - 360 : angle;
+        angle = angle < -220 ? angle + 360 : angle;
+        angle = Mathf.Clamp(angle, -130, 130);
 
         indicatorAnchor.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
@@ -275,5 +342,19 @@ public class PlayerController : MonoBehaviour
                 isGrounded = false;
             }
         }
+    }
+
+    bool IsMouseWithinRange()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        Vector3 objectPos = Camera.main.WorldToScreenPoint(transform.position);
+        mousePos -= objectPos;
+
+        float angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
+
+        // Normalize the angle to be within 0-360 range
+        if (angle < 0) angle += 360;
+
+        return (angle >= 0 && angle <= 225) || (angle >= 315 && angle <= 360);
     }
 }

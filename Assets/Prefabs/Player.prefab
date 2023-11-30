@@ -283,6 +283,17 @@ MonoBehaviour:
   playerVCam: {fileID: 0}
   playerVCamConfiner: {fileID: 0}
   currentConfinerCollider: {fileID: 0}
+  idleSprite:
+  - {fileID: -557984235, guid: d890e857fa1e94c24887440b0e8387b5, type: 3}
+  nSprites:
+  - {fileID: -607558187, guid: d890e857fa1e94c24887440b0e8387b5, type: 3}
+  neSprites:
+  - {fileID: -1726648609, guid: d890e857fa1e94c24887440b0e8387b5, type: 3}
+  eSprites:
+  - {fileID: 532342861, guid: d890e857fa1e94c24887440b0e8387b5, type: 3}
+  seSprites:
+  - {fileID: -1061411764, guid: d890e857fa1e94c24887440b0e8387b5, type: 3}
+  fallingSprites: []
   mouseWorldPos: {x: 0, y: 0, z: 0}
   isFacingRight: 1
   isHoldingWall: 0

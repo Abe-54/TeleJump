@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Abilities")]
+    public bool canShoot = true;
     public bool hasWallSlide = false;
     public bool hasAirBurst = false;
 
@@ -20,7 +22,6 @@ public class PlayerController : MonoBehaviour
     public int maxAmmo = 3;
     public int ammo = 3;
     public float rechargeTime = 2.0f;
-
     public float projectileSpeed = 10.0f;
 
     [Header("Wall Sliding Attributes")]
@@ -32,7 +33,7 @@ public class PlayerController : MonoBehaviour
     [Header("Air Burst Attributes")]
     public ParticleSystem forceParticles;
     public LayerMask forceLayerMask;
-    public float forceRadius = 1.0f;
+    public GameObject forceIndicator;
     public float forceStrength = 10.0f;
     private float initialGravityScale;
 
@@ -54,7 +55,9 @@ public class PlayerController : MonoBehaviour
     public bool isFacingRight = true;
     public bool isHoldingWall = false;
     public bool isGrounded = false;
+    public ForceIndicatorEditor forceIndicatorEditor;
     private Rigidbody2D rb;
+    private bool shouldShoot = false;
 
     // Start is called before the first frame update
     void Start()
@@ -62,8 +65,9 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         initialGravityScale = rb.gravityScale;
 
+        forceIndicator.SetActive(true);
+
         Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Confined;
 
         // Set up camera confiners
         playerVCamConfiner.m_BoundingShape2D = currentConfinerCollider;
@@ -76,19 +80,29 @@ public class PlayerController : MonoBehaviour
         CheckFlipPlayer();
         CheckIfGrounded();
 
+        Vector3 mouseScreenPos = Input.mousePosition;
+        mouseScreenPos.z = 10; // Set to an appropriate depth
+        mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+
+        forceIndicator.transform.position = mouseWorldPos;
+
         if (Input.GetMouseButtonDown(0) && ammo > 0)
         {
-            StartCoroutine(Shoot());
-        }
-        else if (Input.GetMouseButtonDown(0) && ammo <= 0)
-        {
-            Debug.Log("Out of ammo");
-            StartCoroutine(RechargeAmmo());
+            shouldShoot = true;
         }
 
-        if (Input.GetMouseButtonDown(1) && hasAirBurst)
+        if (ammo > maxAmmo)
         {
-            AddForceAtMousePosition();
+            ammo = maxAmmo;
+        }
+
+        if (hasAirBurst)
+        {
+            // Move force indicator to follow the mouse
+            if (Input.GetMouseButtonDown(1))
+            {
+                AddForceAtMousePosition();
+            }
         }
 
         if (hasWallSlide)
@@ -113,9 +127,16 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.sprite = GetSpriteDirection();
     }
 
-    /// <summary>
-    /// Returns the correct sprite based on the direction the player is facing
-    /// </summary>
+    private void FixedUpdate()
+    {
+        if (shouldShoot)
+        {
+            StartCoroutine(Shoot());
+            shouldShoot = false; // Reset the shooting flag
+        }
+    }
+
+    // Returns the sprite to use based on the direction of the mouse
     Sprite GetSpriteDirection()
     {
         if (!IsMouseWithinRange())
@@ -164,19 +185,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public IEnumerator RechargeAmmo()
-    {
-        yield return new WaitForSeconds(rechargeTime);
-        Debug.Log("Recharged ammo");
-        ammo = maxAmmo;
-    }
+    // Recharges ammo after a set amount of time
+    // public IEnumerator RechargeAmmo()
+    // {
+    //     yield return new WaitForSeconds(rechargeTime);
+    //     Debug.Log("Recharged ammo");
+    //     ammo = maxAmmo;
+    // }
 
+    // Adds force to all objects within the force radius
     private void AddForceAtMousePosition()
     {
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = 10;
         mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePos);
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(mouseWorldPos, forceRadius, forceLayerMask);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(mouseWorldPos, forceIndicatorEditor.forceRadius, forceLayerMask);
 
         // Play particle effect
         forceParticles.transform.position = mouseWorldPos;
@@ -186,17 +209,21 @@ public class PlayerController : MonoBehaviour
         foreach (Collider2D collider in colliders)
         {
             Debug.Log("Adding force to " + collider.name);
+
             Rigidbody2D rb = collider.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.AddForceAtPosition(Vector2.up * forceStrength, mouseWorldPos, ForceMode2D.Impulse);
+                Vector2 direction = collider.transform.position - mouseWorldPos;
+                direction.Normalize(); // Normalize the direction
+                rb.AddForceAtPosition(direction * forceStrength, mouseWorldPos, ForceMode2D.Impulse);
             }
         }
     }
 
+    // Draw a circle in the scene view to show the radius
     void OnDrawGizmos()
     {
-        //only draw this gizmo when the game is running and the player pressed the mouse button\
+        //only draw this gizmo when the game is running and the player pressed the mouse button
         if (!Application.isPlaying || !Input.GetMouseButton(1))
         {
             return;
@@ -204,9 +231,10 @@ public class PlayerController : MonoBehaviour
 
         //draw a circle in the scene view to show the radius ussing gizmos
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(mouseWorldPos, forceRadius);
+        Gizmos.DrawWireSphere(mouseWorldPos, forceIndicatorEditor.forceRadius);
     }
 
+    // Rotates the indicator to point towards the mouse
     void RotateIndicator()
     {
         if (!IsMouseWithinRange()) return;
@@ -225,6 +253,7 @@ public class PlayerController : MonoBehaviour
         indicatorAnchor.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
 
+    // Flips the player to face the mouse
     void CheckFlipPlayer()
     {
         Vector3 mousePos = Input.mousePosition;
@@ -241,6 +270,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Flips the player to face the opposite direction
     void FlipPlayer()
     {
         isFacingRight = !isFacingRight;
@@ -250,6 +280,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Flipped player");
     }
 
+    // Shoots a projectile
     IEnumerator Shoot()
     {
         GameObject newProjectile = Instantiate(projectilePrefab, projectileSpawnPoint.transform.position, Quaternion.identity);
@@ -269,10 +300,12 @@ public class PlayerController : MonoBehaviour
 
         // Destroy the projectile
         Destroy(newProjectile);
+
+        ammo++;
     }
 
 
-
+    // Checks if the player is holding onto a wall
     void CheckForWall()
     {
         Vector2 direction = isFacingRight ? Vector2.right : Vector2.left;
@@ -312,6 +345,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Checks if the player is grounded
     void CheckIfGrounded()
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.0f, groundLayerMask);
@@ -344,6 +378,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Checks if the mouse is within the range of the player
     bool IsMouseWithinRange()
     {
         Vector3 mousePos = Input.mousePosition;

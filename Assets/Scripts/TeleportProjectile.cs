@@ -30,7 +30,16 @@ public class TeleportProjectile : MonoBehaviour
 
     private IEnumerator ResetAfterLifetime()
     {
-        yield return new WaitForSeconds(projectileLifeTime);
+        SpriteRenderer projectileSpriteRenderer = GetComponent<SpriteRenderer>();
+
+        for (float t = 0; t < projectileLifeTime; t += Time.deltaTime)
+        {
+            float alpha = Mathf.Lerp(1.0f, 0.0f, t / projectileLifeTime);
+            projectileSpriteRenderer.color = new Color(projectileSpriteRenderer.color.r, projectileSpriteRenderer.color.g, projectileSpriteRenderer.color.b, alpha);
+            yield return null;
+        }
+
+        // yield return new WaitForSeconds(projectileLifeTime);
         DeactivateProjectile();
     }
 
@@ -42,6 +51,7 @@ public class TeleportProjectile : MonoBehaviour
         if (other.gameObject.tag == "TP_Wall")
         {
             playerTransform.position = transform.position; // Teleport player
+            playerTransform.GetComponent<PlayerController>().ammo++;
         }
         DeactivateProjectile();
     }

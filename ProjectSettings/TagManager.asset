@@ -39,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BG
+    uniqueID: 576012545
+    locked: 0
   - name: Walls
     uniqueID: 2938800635
     locked: 0

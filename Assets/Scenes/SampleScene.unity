@@ -1692,7 +1692,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4576549283189182928, guid: 58886a785333c5c4d88652f4c590c926, type: 3}
       propertyPath: m_Name
-      value: Goal
+      value: Dialog Checkpoint
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

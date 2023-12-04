@@ -74,6 +74,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!canShoot)
+        {
+            return;
+        }
         RotateIndicator();
         CheckFlipPlayer();
         CheckIfGrounded();
@@ -127,7 +131,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (shouldShoot)
+        if (shouldShoot && canShoot)
         {
             StartCoroutine(Shoot());
             shouldShoot = false; // Reset the shooting flag
@@ -182,14 +186,6 @@ public class PlayerController : MonoBehaviour
             return eSprites[0];
         }
     }
-
-    // Recharges ammo after a set amount of time
-    // public IEnumerator RechargeAmmo()
-    // {
-    //     yield return new WaitForSeconds(rechargeTime);
-    //     Debug.Log("Recharged ammo");
-    //     ammo = maxAmmo;
-    // }
 
     // Adds force to all objects within the force radius
     private void AddForceAtMousePosition()
@@ -389,5 +385,20 @@ public class PlayerController : MonoBehaviour
         if (angle < 0) angle += 360;
 
         return (angle >= 0 && angle <= 225) || (angle >= 315 && angle <= 360);
+    }
+
+    public void SetCanShoot(bool canShoot)
+    {
+        this.canShoot = canShoot;
+    }
+
+    public void SetHasWallSlide(bool hasWallSlide)
+    {
+        this.hasWallSlide = hasWallSlide;
+    }
+
+    public void SetHasAirBurst(bool hasAirBurst)
+    {
+        this.hasAirBurst = hasAirBurst;
     }
 }

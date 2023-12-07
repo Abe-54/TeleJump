@@ -67,8 +67,6 @@ public class PlayerController : MonoBehaviour
 
         forceIndicator.SetActive(true);
 
-        Cursor.visible = false;
-
         // Set up camera confiners
         playerVCamConfiner.m_BoundingShape2D = currentConfinerCollider;
     }
@@ -76,6 +74,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!canShoot)
+        {
+            return;
+        }
         RotateIndicator();
         CheckFlipPlayer();
         CheckIfGrounded();
@@ -129,7 +131,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (shouldShoot)
+        if (shouldShoot && canShoot)
         {
             StartCoroutine(Shoot());
             shouldShoot = false; // Reset the shooting flag
@@ -185,26 +187,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Recharges ammo after a set amount of time
-    // public IEnumerator RechargeAmmo()
-    // {
-    //     yield return new WaitForSeconds(rechargeTime);
-    //     Debug.Log("Recharged ammo");
-    //     ammo = maxAmmo;
-    // }
-
     // Adds force to all objects within the force radius
     private void AddForceAtMousePosition()
     {
         Vector3 mousePos = Input.mousePosition;
         mousePos.z = 10;
-        mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePos);
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePos);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(mouseWorldPos, forceIndicatorEditor.forceRadius, forceLayerMask);
 
         // Play particle effect
         forceParticles.transform.position = mouseWorldPos;
         forceParticles.Play();
-
 
         foreach (Collider2D collider in colliders)
         {
@@ -215,10 +208,11 @@ public class PlayerController : MonoBehaviour
             {
                 Vector2 direction = collider.transform.position - mouseWorldPos;
                 direction.Normalize(); // Normalize the direction
-                rb.AddForceAtPosition(direction * forceStrength, mouseWorldPos, ForceMode2D.Impulse);
+                rb.AddForce(direction * forceStrength, ForceMode2D.Impulse);
             }
         }
     }
+
 
     // Draw a circle in the scene view to show the radius
     void OnDrawGizmos()
@@ -391,5 +385,20 @@ public class PlayerController : MonoBehaviour
         if (angle < 0) angle += 360;
 
         return (angle >= 0 && angle <= 225) || (angle >= 315 && angle <= 360);
+    }
+
+    public void SetCanShoot(bool canShoot)
+    {
+        this.canShoot = canShoot;
+    }
+
+    public void SetHasWallSlide(bool hasWallSlide)
+    {
+        this.hasWallSlide = hasWallSlide;
+    }
+
+    public void SetHasAirBurst(bool hasAirBurst)
+    {
+        this.hasAirBurst = hasAirBurst;
     }
 }

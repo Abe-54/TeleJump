@@ -11,10 +11,12 @@ public class PlayerController : MonoBehaviour
     public bool canShoot = true;
     public bool hasWallSlide = false;
     public bool hasAirBurst = false;
+    [Space(10)]
 
     [Header("Movement Attributes")]
     public GameObject indicatorAnchor;
     public GameObject indicator;
+    [Space(10)]
 
     [Header("Shooting Attributes")]
     public GameObject projectilePrefab;
@@ -23,12 +25,14 @@ public class PlayerController : MonoBehaviour
     public int ammo = 3;
     public float rechargeTime = 2.0f;
     public float projectileSpeed = 10.0f;
+    [Space(10)]
 
     [Header("Wall Sliding Attributes")]
     public float wallHoldTime = 3.0f; // Time in seconds to hold onto the wall
     public LayerMask wallLayerMask; // Layer mask to identify what is considered a wall
     public LayerMask groundLayerMask; // Layer mask to identify what is considered the ground
     private float wallHoldTimer;
+    [Space(10)]
 
     [Header("Air Burst Attributes")]
     public ParticleSystem forceParticles;
@@ -36,11 +40,13 @@ public class PlayerController : MonoBehaviour
     public GameObject forceIndicator;
     public float forceStrength = 10.0f;
     private float initialGravityScale;
+    [Space(10)]
 
     [Header("Camera Attributes")]
     public CinemachineVirtualCamera playerVCam;
     public CinemachineConfiner playerVCamConfiner;
     public PolygonCollider2D currentConfinerCollider;
+    [Space(10)]
 
     [Header("Art")]
     public List<Sprite> idleSprite;
@@ -50,6 +56,7 @@ public class PlayerController : MonoBehaviour
     public List<Sprite> seSprites;
     public List<Sprite> fallingSprites;
 
+
     [Header("Debug")]
     public Vector3 mouseWorldPos;
     public bool isFacingRight = true;
@@ -58,6 +65,7 @@ public class PlayerController : MonoBehaviour
     public ForceIndicatorEditor forceIndicatorEditor;
     private Rigidbody2D rb;
     private bool shouldShoot = false;
+
 
     // Start is called before the first frame update
     void Start()

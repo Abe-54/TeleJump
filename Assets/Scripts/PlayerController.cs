@@ -35,10 +35,14 @@ public class PlayerController : MonoBehaviour
     [Space(10)]
 
     [Header("Air Burst Attributes")]
+    public AudioClip airBurstSound;
     public ParticleSystem forceParticles;
     public LayerMask forceLayerMask;
     public GameObject forceIndicator;
+    public float airBurstCooldown = 0.2f;
+    private float lastAirBurstTime = 0f;
     public float forceStrength = 10.0f;
+    public float selfForceStrength = 20.0f;
     private float initialGravityScale;
     [Space(10)]
 
@@ -109,9 +113,10 @@ public class PlayerController : MonoBehaviour
         if (hasAirBurst)
         {
             // Move force indicator to follow the mouse
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(1) && Time.time - lastAirBurstTime >= airBurstCooldown)
             {
                 AddForceAtMousePosition();
+                lastAirBurstTime = Time.time;
             }
         }
 
@@ -207,6 +212,9 @@ public class PlayerController : MonoBehaviour
         forceParticles.transform.position = mouseWorldPos;
         forceParticles.Play();
 
+        //Play sound effect
+        AudioSource.PlayClipAtPoint(airBurstSound, mouseWorldPos);
+
         foreach (Collider2D collider in colliders)
         {
             Debug.Log("Adding force to " + collider.name);
@@ -216,7 +224,15 @@ public class PlayerController : MonoBehaviour
             {
                 Vector2 direction = collider.transform.position - mouseWorldPos;
                 direction.Normalize(); // Normalize the direction
-                rb.AddForce(direction * forceStrength, ForceMode2D.Impulse);
+
+                if (collider.gameObject.tag == "Player")
+                {
+                    rb.AddForce(direction * selfForceStrength, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    rb.AddForce(direction * forceStrength, ForceMode2D.Impulse);
+                }
             }
         }
     }
@@ -298,12 +314,9 @@ public class PlayerController : MonoBehaviour
 
         ammo--;
 
-        yield return new WaitForSeconds(projectileScript.projectileLifeTime);
+        yield return new WaitWhile(() => newProjectile != null);
 
-        // Destroy the projectile
-        Destroy(newProjectile);
-
-        ammo++;
+        ammo = Mathf.Min(ammo + 1, maxAmmo);
     }
 
 

@@ -135,6 +135,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d26b62f347a7de4aa5349296005692e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tpSound: {fileID: 8300000, guid: 0b512e90b4a3d4900ae3f389e7227bde, type: 3}
   projectileLifeTime: 4
 --- !u!50 &8291018750082041594
 Rigidbody2D:

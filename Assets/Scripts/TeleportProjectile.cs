@@ -6,6 +6,7 @@ using Cinemachine;
 public class TeleportProjectile : MonoBehaviour
 {
     private Transform playerTransform;
+    public AudioClip tpSound;
     private CinemachineVirtualCamera vCam;
     public float projectileLifeTime = 2.0f;
 
@@ -51,8 +52,18 @@ public class TeleportProjectile : MonoBehaviour
         if (other.gameObject.tag == "TP_Wall")
         {
             playerTransform.position = transform.position; // Teleport player
-            playerTransform.GetComponent<PlayerController>().ammo++;
+
+            // Play teleport sound
+            AudioSource.PlayClipAtPoint(tpSound, transform.position);
         }
+
+        if (other.gameObject.tag == "Reset")
+        {
+            playerTransform.position = transform.position; // Teleport player
+            playerTransform.GetComponent<PlayerController>().ammo++;
+            other.gameObject.GetComponent<ResetLogic>().ResetPlayer();
+        }
+
         DeactivateProjectile();
     }
 

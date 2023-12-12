@@ -23,6 +23,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3563266643115112850}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,7 +33,6 @@ Transform:
   - {fileID: 5054063585884374088}
   - {fileID: 8993474763621118925}
   m_Father: {fileID: 0}
-  m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3618938024625658648
 PrefabInstance:
@@ -202,6 +202,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4610392880285409989, guid: 10220612a3454a043a0e9add34b5f7bf, type: 3}
+      propertyPath: airBurstSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 28ed85eac3a9a4fb28c5ff99882cbac8, type: 3}
+    - target: {fileID: 4610392880285409989, guid: 10220612a3454a043a0e9add34b5f7bf, type: 3}
       propertyPath: cursorTexture
       value: 
       objectReference: {fileID: 2800000, guid: 9c21009dc53844907bff047151fa2a51, type: 3}
@@ -259,6 +263,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8067237762359246483}
     m_Modifications:
+    - target: {fileID: 2657723913237498220, guid: 2c17b885472744ce593df45245433b6c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4281270498396180669, guid: 2c17b885472744ce593df45245433b6c, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -266,6 +274,18 @@ PrefabInstance:
     - target: {fileID: 5131227222579447784, guid: 2c17b885472744ce593df45245433b6c, type: 3}
       propertyPath: m_Name
       value: Force Indicator
+      objectReference: {fileID: 0}
+    - target: {fileID: 5992921281790896493, guid: 2c17b885472744ce593df45245433b6c, type: 3}
+      propertyPath: forceIndicator
+      value: 
+      objectReference: {fileID: 8905087373108374006}
+    - target: {fileID: 5992921281790896493, guid: 2c17b885472744ce593df45245433b6c, type: 3}
+      propertyPath: isCursorVisible
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5992921281790896493, guid: 2c17b885472744ce593df45245433b6c, type: 3}
+      propertyPath: isCrosshairVisible
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6135348153222919275, guid: 2c17b885472744ce593df45245433b6c, type: 3}
       propertyPath: m_LocalScale.x
@@ -347,5 +367,10 @@ GameObject:
 --- !u!4 &2626159094145079307 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8865025605461620881, guid: 2c17b885472744ce593df45245433b6c, type: 3}
+  m_PrefabInstance: {fileID: 6878993453639131290}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8905087373108374006 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2657723913237498220, guid: 2c17b885472744ce593df45245433b6c, type: 3}
   m_PrefabInstance: {fileID: 6878993453639131290}
   m_PrefabAsset: {fileID: 0}

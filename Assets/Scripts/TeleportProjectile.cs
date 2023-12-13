@@ -7,8 +7,35 @@ public class TeleportProjectile : MonoBehaviour
 {
     private Transform playerTransform;
     public AudioClip tpSound;
+
+    private AudioSource playerAudioSource;
     private CinemachineVirtualCamera vCam;
     public float projectileLifeTime = 2.0f;
+
+    private SpriteRenderer spriteRenderer;
+    private TrailRenderer trailRenderer;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        trailRenderer = GetComponent<TrailRenderer>();
+    }
+
+    private void Start()
+    {
+        playerAudioSource = FindObjectOfType<PlayerController>().GetComponent<AudioSource>();
+    }
+
+    private void Update()
+    {
+        if (spriteRenderer != null && trailRenderer != null)
+        {
+            Color trailColor = trailRenderer.startColor;
+            trailColor.a = spriteRenderer.color.a;
+            trailRenderer.startColor = trailColor;
+            trailRenderer.endColor = trailColor;
+        }
+    }
 
     private void OnEnable()
     {
@@ -31,35 +58,42 @@ public class TeleportProjectile : MonoBehaviour
 
     private IEnumerator ResetAfterLifetime()
     {
-        SpriteRenderer projectileSpriteRenderer = GetComponent<SpriteRenderer>();
-
         for (float t = 0; t < projectileLifeTime; t += Time.deltaTime)
         {
             float alpha = Mathf.Lerp(1.0f, 0.0f, t / projectileLifeTime);
-            projectileSpriteRenderer.color = new Color(projectileSpriteRenderer.color.r, projectileSpriteRenderer.color.g, projectileSpriteRenderer.color.b, alpha);
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+
             yield return null;
         }
 
-        // yield return new WaitForSeconds(projectileLifeTime);
         DeactivateProjectile();
     }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-
         if (other.gameObject.tag == "Player") return; // Ignore collision with player
 
-        if (other.gameObject.tag == "TP_Wall")
+        if (other.gameObject.tag == "TP_Wall" || other.gameObject.tag == "Repawn")
         {
             playerTransform.position = transform.position; // Teleport player
 
+            // Reset player's velocity
+            Rigidbody2D playerRb = playerTransform.GetComponent<Rigidbody2D>();
+            if (playerRb != null)
+            {
+                playerRb.velocity = Vector2.zero;
+                playerRb.angularVelocity = 0;
+            }
+
             // Play teleport sound
-            AudioSource.PlayClipAtPoint(tpSound, transform.position);
+            if (playerAudioSource != null && tpSound != null)
+            {
+                playerAudioSource.PlayOneShot(tpSound);
+            }
         }
 
         if (other.gameObject.tag == "Repawn")
         {
-            playerTransform.position = transform.position; // Teleport player
             playerTransform.GetComponent<PlayerController>().ammo++;
             other.gameObject.GetComponent<ResetLogic>().ResetPlayer();
         }
@@ -70,7 +104,7 @@ public class TeleportProjectile : MonoBehaviour
     private void DeactivateProjectile()
     {
         ResetCameraFollow();
-        gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 
     private void ResetCameraFollow()

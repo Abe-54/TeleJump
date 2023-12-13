@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour
     public bool isGrounded = false;
     public ForceIndicatorEditor forceIndicatorEditor;
     private Rigidbody2D rb;
+    private AudioSource audioSource;
     private bool shouldShoot = false;
 
 
@@ -75,12 +76,10 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
         initialGravityScale = rb.gravityScale;
 
         forceIndicator.SetActive(true);
-
-        // Set up camera confiners
-        playerVCamConfiner.m_BoundingShape2D = currentConfinerCollider;
     }
 
     // Update is called once per frame
@@ -213,7 +212,10 @@ public class PlayerController : MonoBehaviour
         forceParticles.Play();
 
         //Play sound effect
-        AudioSource.PlayClipAtPoint(airBurstSound, mouseWorldPos);
+        if (audioSource != null && airBurstSound != null)
+        {
+            audioSource.PlayOneShot(airBurstSound);
+        }
 
         foreach (Collider2D collider in colliders)
         {

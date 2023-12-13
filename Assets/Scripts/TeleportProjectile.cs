@@ -57,7 +57,7 @@ public class TeleportProjectile : MonoBehaviour
             AudioSource.PlayClipAtPoint(tpSound, transform.position);
         }
 
-        if (other.gameObject.tag == "Reset")
+        if (other.gameObject.tag == "Repawn")
         {
             playerTransform.position = transform.position; // Teleport player
             playerTransform.GetComponent<PlayerController>().ammo++;

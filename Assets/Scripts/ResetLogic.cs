@@ -26,4 +26,9 @@ public class ResetLogic : MonoBehaviour
         playerController.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         playerController.GetComponent<Rigidbody2D>().angularVelocity = 0;
     }
+
+    public void SetSpawnPoint(Transform newSpawnPoint)
+    {
+        resetPosition = newSpawnPoint;
+    }
 }
